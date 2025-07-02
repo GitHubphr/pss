@@ -1,0 +1,40 @@
+ clc , clear all , close all ;
+ P = input('Power in MW. = ');
+ pf = input('Power Factor = ');
+ Vt = input('Line to Line Voltage in KV = ');
+ Xd = input('Xd in ohms = ');
+ Xq = input('Xq in ohms = ');
+ Vph = Vt*1000/sqrt(3)
+ pf_ang = acos(pf);
+ Q = P*tan(pf_ang);
+ I =(P-j*Q)*1000000/(3*Vph)
+ delta=0:1:180;
+ delta_rad=delta*(pi/180);
+ if (Xd == Xq)
+ Ef = Vph+(j*I*Xd) ;
+ Ef_mag  = abs(Ef)
+ RealPower = abs(Ef)*Vph*sin(delta_rad)/Xd;
+ Net_3Power = 3* RealPower/1000000 ;
+ Net_Reluct_power = 0.0
+ end
+ if (Xd~=Xq) 
+ Eq = Vph+(j*I*Xq);
+ Id_mag = abs(I)* sin(angle(Eq)-angle(I));
+ Ef_mag = abs(Eq) + ((Xd-Xq)*Id_mag) ;
+ RealPower = (Ef_mag)*Vph*sin(delta_rad)/Xd ;
+ Reluct_power = Vph^2*(Xd-Xq)*sin(2*delta_rad)/(2*Xd*Xq);
+ Net_Reluct_power = 3*Reluct_power/(1e6) ;
+ TotalPower = RealPower + Reluct_power ;
+ Net_3Power = 3*TotalPower/1000000;
+ end
+ fprintf('\n Excitation EMF per phase, Ef = %6.2f in KV \n',Ef_mag/1000);
+ Vreg =(Ef_mag- abs(Vph))*100/abs(Vph);
+ fprintf('\n Voltage Regulation = %5.2f %% \n', Vreg);
+ plot(delta,Net_Reluct_power,'k');
+ hold on
+ plot(delta,Net_3Power,'r');
+ xlabel('\delta (Deg)-->');
+ ylabel('Three phase Power-->');
+ title('Power Angle Curve for Synchronous  M/C');
+ legend('Reluctance power', 'Total Real Power') ;
+ grid

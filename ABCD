@@ -1,0 +1,64 @@
+z=0.2+0.40i ;   
+y=0+3.14e-6i ;
+K1 = input('\n Enter 1-for short line \n 2-for medium line\n 3-for long line   '); 
+switch K1  
+case 1,         
+    length=40;
+    Z=z*length; Y=y*length; 
+    A=1; B=Z;  C=0;  D=1; 
+case 2,             
+    length=100;
+    Z=z*length; Y=y*length; 
+    A=1+Y*Z/2; 
+    B=Z; 
+    C=Y*(1+Y*Z/4); 
+    D=A; 
+case 3,             
+    length=200;  
+    zc = sqrt(z/y); 
+    gam = sqrt(z*y)*length;
+    A=cosh(gam); 
+    D=A; 
+    B=zc*sinh(gam); 
+    C=1/zc*sinh(gam);     
+ 
+otherwise 
+    disp('Wrong choice of Line type'); 
+end 
+fprintf('\n       A,B,C and D constants : \n'); 
+fprintf('-----------------------------------------------'); 
+fprintf('\n A = %15.4f %+15.4fi',real(A),imag(A)); 
+fprintf('\n B = %15.4f %+15.4fi',real(B),imag(B));   
+fprintf('\n C = %15.4f %+15.4fi',real(C),imag(C)); 
+fprintf('\n D = %15.4f %+15.4fi',real(D),imag(D)); 
+fprintf('\n\n (AD - BC) = %5.2f \n',real(A*D-B*C)); 
+  
+K2 = input('\n Enter 1 - To read Vr, Ir and compute Vs , I\n 2 - To read Vs, Is and compute Vr, Ir    '); 
+switch K2, 
+case 1, 
+    vr=132+0.0i;
+    ir=174.96-131.22i; 
+    vr=vr*1e3/sqrt(3)
+    vs=(A*vr+B*ir)/1e3;
+    is=C*vr+D*ir; 
+    fprintf('\n Sending end Voltage/ph=%f %+fi KV',real(vs),imag(vs)); 
+    fprintf('\n Sending end Current/ph=%f %+fiAMP',real(is),imag(is)); 
+    vs=vs*1e3; 
+case 2, 
+     vs=132+0.0i; 
+     is=174.96-131.22i; 
+    vs = vs*1e3/sqrt(3.0); 
+    vr =(D*vs-B*is)/1e3; 
+    ir =-C*vs+D*is; 
+    fprintf('\n Receiving end Voltage/ph=%f %+fi KV',real(vr),imag(vr)); 
+    fprintf('\n Receiving end Current/ph=%f %+fi AMP',real(ir),imag(ir)); 
+    vr=vr*1e3; 
+end 
+rec_pow=3*real(vr*conj(ir))/1e6;  
+send_pow=3*real(vs*conj(is))/1e6; 
+eff=rec_pow/send_pow*100; 
+reg=((abs(vs)/abs(A))-abs(vr))/abs(vr)*100; 
+fprintf('\n Receiving end power=%.2f KVA',rec_pow); 
+fprintf('\n Sending end power=%.2f KVA',send_pow); 
+fprintf('\n Efficiency=%.2f %%',eff); 
+fprintf('\n Voltage Regulation=%.2f %% \n',reg);

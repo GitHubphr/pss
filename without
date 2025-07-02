@@ -1,0 +1,43 @@
+Ldata  =[ 1  2  0.02+0.06i  0.06i    
+          1  3  0.08+0.24i  0.05i       
+          2  3  0.06+0.18i  0.04i        
+          2  4  0.06+0.18i  0.04i       
+          2  5  0.04+0.12i  0.03i      
+          3  4  0.01+0.03i  0.02i       
+          4  5  0.08+0.24i  0.05i ];        
+  
+     fb = Ldata(:,1); 
+     tb = Ldata(:,2);
+     z  = Ldata(:,3); 
+     lcy= Ldata(:,4); 
+     y=1./z;   
+     nbus=max(max(fb),max(tb));   
+     Ybus=zeros(nbus);     
+     nline=length(fb);   
+     nlb=nline+nbus;  
+     A=zeros(nlb,nbus); 
+      for k=1:nbus 
+        A(k,k)=1;    
+     end 
+     for k=1:nline 
+        A(nbus+k,fb(k))= 1; 
+        A(nbus+k,tb(k))=-1; 
+     end 
+     disp('A-matrix'),disp(A); 
+     sh=zeros(nbus); 
+     for k=1:nline     
+         sh(fb(k))=sh(fb(k))+lcy(k);  
+         sh(tb(k))=sh(tb(k))+lcy(k);  
+     end 
+      ypr=zeros(nlb,nlb);    
+     for k=1:nbus 
+      ypr(k,k)=sh(k);  
+     end 
+  
+     for k=1:nline 
+      ypr(nbus+k,nbus+k)=y(k); 
+     end 
+ 
+     At = transpose(A); 
+     Ybus=At*ypr*A
+     Zbus =inv(Ybus) 
